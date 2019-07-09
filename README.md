@@ -11,7 +11,7 @@ Activate authentication via this LDAP backend in `airflow.cfg` config:
 ```
 [webserver]
 authenticate = True
-auth_backend = airflow-alt-ldap.auth.backend.ldap_auth
+auth_backend = airflow_alt_ldap.auth.backend.ldap_auth
 ```
 
 Then you can configure that module using the following keys (example conf to be adapted):
