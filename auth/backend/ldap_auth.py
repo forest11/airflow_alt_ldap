@@ -301,9 +301,10 @@ def login(self, request):
                 username=username,
                 email=mail,
                 is_superuser=False)
+            session.add(user)
 
-        session.merge(user)
         session.commit()
+        session.merge(user)
         flask_login.login_user(LdapUser(user))
         session.commit()
         session.close()
