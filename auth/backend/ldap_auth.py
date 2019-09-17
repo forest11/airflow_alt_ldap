@@ -225,6 +225,22 @@ class LdapUser(models.User):
 
         return ''
 
+    @staticmethod
+    def is_admin(username):
+        conn = get_ldap_connection(configuration.get("ldap", "bind_user"),
+                                   configuration.get("ldap", "bind_password"))
+        try:
+            superuser = group_contains_user(conn,
+                                            configuration.get("ldap", "group_basedn"),
+                                            configuration.get("ldap", "superuser_filter"),
+                                            configuration.get("ldap", "group_member_attr"),
+                                            username)
+        except AirflowConfigException:
+            superuser = False
+            LOG.debug("Missing configuration for superuser settings.  Skipping.")
+
+        return superuser
+
     @property
     def is_active(self):
         '''Required by flask_login'''
@@ -296,11 +312,12 @@ def login(self, request):
 
         if not user:
             mail = LdapUser.user_mail(username)
+            is_admin = LdapUser.is_admin(username)
 
             user = models.User(
                 username=username,
                 email=mail,
-                is_superuser=False)
+                superuser=is_admin)
             session.add(user)
 
         session.commit()
