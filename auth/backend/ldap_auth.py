@@ -110,6 +110,7 @@ def groups_user(conn, search_base, group_filter, group_member_attr, username):
 class LdapUser(models.User):
     def __init__(self, user):
         self.user = user
+        self.airflow_superuser = user.superuser
         self.ldap_groups = []
 
         # Load and cache superuser and data_profiler settings.
